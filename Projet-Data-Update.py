@@ -1,111 +1,100 @@
-import os
-import json
+import feedparser
+import requests
 import re
+import time
 import pandas as pd
+import os
 
-#fonctions pour un meilleur affichage
-def clean_html(raw_html):
-    if not isinstance(raw_html, str):
-        return raw_html
-    clean_re = re.compile('<[^>]+>')
-    clean_text = re.sub(clean_re, '', raw_html)
-    return clean_text.strip()
+#lecture du DataFrame existant avec les données du pro
 
-def format_description(desc, max_length=400):
-    if not isinstance(desc, str):
-        return desc
-    desc = desc.replace('\n', ' ').replace('\r', ' ')
-    desc = re.sub(r'\s+', ' ', desc)
-    desc = desc.strip()
-    if len(desc) > max_length:
-        desc = desc[:max_length] + '...'
-    return desc
+df_existing = pd.read_csv("DataFrame.csv", encoding="utf-8")
+print(f"DataFrame existant : {df_existing.shape[0]} lignes")
 
+#Etape 1 : Lecture flux RSS
 
-#Étape 1 : Lecture des bulletins locaux (Avis + alertes)
+#liste des 2 flux à lire (avis et alertes)
+flux_urls = [
+    "https://www.cert.ssi.gouv.fr/avis/feed",
+    "https://www.cert.ssi.gouv.fr/alerte/feed"
+]
 
-folders = ["data_pour_TD_final/Avis", "data_pour_TD_final/alertes"]
-dict_bulletins = []
+#on stocke les liens des bulletins pour l'étape 2
+list_links = []
+dict_bulletins = [] #pour stocker les infos pour le CSV
 
-for folder in folders:
-    print(f"\n=== Lecture du dossier : {folder} ===\n")
+#On parcourt les 2 flux
+for url in flux_urls:
+    print(f"--- Flux : {url} ---")
+    rss_feed = feedparser.parse(url)
     
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
+    #Parcours de chaque bulletin
+    for entry in rss_feed.entries:
+        link = entry.link
+        list_links.append(link)
         
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        type_bulletin = "Alerte" if "alertes" in folder else "Avis"
-     
-        reference = data.get("reference", "N/A")
-
-        titre = data.get("title", "N/A")
-        description = format_description(clean_html(data.get("summary", "N/A")))
-        date_pub = data.get("revisions", [{}])[0].get("revision_date", "N/A")   
-
-        # reconstruction du lien
-        if type_bulletin == "Avis":
-            lien = f"https://www.cert.ssi.gouv.fr/avis/{reference}/"
-        else:
-            lien = f"https://www.cert.ssi.gouv.fr/alerte/{reference}/"
+        #Vérifie si ce bulletin est déjà dans le CSV
+        if link in df_existing["Lien_bulletin"].values:
+            print(f"Déjà dans le DataFrame : {link}")
+            continue  #On ne le traite pas
         
-        
-        
-        print("Titre :", titre)
-        print("Description :", description)
-        print("Date :", date_pub)
-        print("Lien :", lien)
         print("-" * 80)
+        print(f"** Nouveau bulletin détecté ** :")
+        print("Titre :", entry.title)
+        print("Description:", entry.description)
+        print("Date :", entry.published)
+        print("Lien :", entry.link)
+        print("-" * 80) #ligne de séparation pour la lisibilité
         
-        
+        type_bulletin = "Alerte" if "/alerte/" in link else "Avis"
         
         dict_bulletins.append({
-            "Titre_ANSSI": titre,
-            "Date_publication": date_pub,
-            "Lien_bulletin": lien,
+            "Titre_ANSSI": entry.title,
+            "Date_publication": entry.published,
+            "Lien_bulletin": entry.link,
             "Type": type_bulletin,
-            "Liste_CVE": [],
-            "File_path": file_path  #utile pour étape 2
+            "Liste_CVE": []  #remplir en Etape 2
         })
-        
 
-#Étape 2 : Extraction des CVE
 
+#Etape 2 : Extraction des CVE 
+
+print("\nExtraction CVE des nouveaux bulletins : \n")
 for bulletin in dict_bulletins:
-    file_path = bulletin["File_path"]
-    print("Lien JSON (local) :", file_path)
+    link = bulletin["Lien_bulletin"]
+    json_url = link + "json/"
+    print("Lien JSON :", json_url)
     
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        response = requests.get(json_url)
+        response.raise_for_status()
+        data = response.json()
+        
+        #par clés
+        ref_cves = list(data.get("cves", []))
+        cve_names = [cve["name"] for cve in ref_cves]
+        
+        #par regex (motif CVE-xxxx-yyyyy) quand c'est pas forcément mentionné dans les clés mais c'ets mentionné dans le texte
+        cve_pattern = r"CVE-\d{4}-\d{4,7}"
+        cve_list_json = list(set(re.findall(cve_pattern, str(data))))
+        
+        #fusion dans une liste sans doublons + maj du bulletin
+        all_cves = list(set(cve_names + cve_list_json))
+        bulletin["Liste_CVE"] = all_cves
+        
+        print("CVE trouvées :", all_cves)
     
-    # par clés
-    ref_cves = list(data.get("cves", []))
-    cve_names = [cve["name"] for cve in ref_cves]
-    print("CVE référencées (clé cves) :", cve_names)
+    except Exception as e:
+        print(f"Erreur récupération JSON : {e}")
     
-    # par regex
-    cve_pattern = r"CVE-\d{4}-\d{4,7}"
-    cve_list_json = list(set(re.findall(cve_pattern, str(data))))
-    print("CVE trouvées dans JSON (regex) :", cve_list_json)
-    
-    # fusion sans doublons
-    all_cves = list(set(cve_names + cve_list_json))
-    print("Liste totale CVE (sans doublons) :", all_cves)
-    
-    # mise à jour du bulletin
-    bulletin["Liste_CVE"] = all_cves
-    
+    time.sleep(2)
     print("=" * 100)
 
-
-
-#Étape 3 : Enrichissement local avec mitre/ et first/ 
+#Etape 3 : Enrichissement avec API
 
 enriched_cve_data = []
 
 for bulletin in dict_bulletins:
-    id_anssi = os.path.basename(bulletin["File_path"])
+    id_anssi = bulletin["Lien_bulletin"].split("/")[-2]
     titre_anssi = bulletin["Titre_ANSSI"]
     type_bulletin = bulletin["Type"]
     date_publication = bulletin["Date_publication"]
@@ -116,10 +105,12 @@ for bulletin in dict_bulletins:
     for cve_id in bulletin["Liste_CVE"]:
         print(f"\nEnrichissement de {cve_id}...")
         
-        # MITRE
+        # API MITRE
         try:
-            with open(f"data_pour_TD_final/mitre/{cve_id}", 'r', encoding='utf-8') as f:
-                data_mitre = json.load(f)
+            url_mitre = f"https://cveawg.mitre.org/api/cve/{cve_id}"
+            response_mitre = requests.get(url_mitre)
+            response_mitre.raise_for_status()
+            data_mitre = response_mitre.json()
             
             description = data_mitre["containers"]["cna"]["descriptions"][0]["value"]
             
@@ -190,37 +181,34 @@ for bulletin in dict_bulletins:
         
         except Exception as e:
             print(f"Erreur enrichissement MITRE {cve_id} : {e}")
-            
         
-        # FIRST (EPSS)
+        #API FIRST (EPSS)
         try:
-            with open(f"data_pour_TD_final/first/{cve_id}", 'r', encoding='utf-8') as f:
-                data_epss = json.load(f)
-            
-            if isinstance(data_epss, list):
-                epss_score = data_epss[0]["epss"] if data_epss else None
-            else:
-                epss_data = data_epss.get("data", [])
-                epss_score = epss_data[0]["epss"] if epss_data else None
-
-
+            url_epss = f"https://api.first.org/data/v1/epss?cve={cve_id}"
+            response_epss = requests.get(url_epss)
+            response_epss.raise_for_status()
+            data_epss = response_epss.json()
+            epss_data = data_epss.get("data", [])
+            epss_score = epss_data[0]["epss"] if epss_data else None
         except Exception as e:
             print(f"Erreur enrichissement EPSS {cve_id} : {e}")
             epss_score = None
         
-        # MAJ du score EPSS
+        #MAJ du score EPSS
         for row in enriched_cve_data:
             if row["CVE_ID"] == cve_id and row["ID_ANSSI"] == id_anssi:
                 row["EPSS_score"] = epss_score
+        
+        time.sleep(1)
 
-print("\nEnrichissement terminé ! Nombre total de lignes enrichies :", len(enriched_cve_data))
+#Etape 4 : Fusion des dataframes et sauvegarde
 
+df_new = pd.DataFrame(enriched_cve_data)
+print(f"\nNouvelles lignes à ajouter : {df_new.shape[0]}")
 
+# concaténation
+df_final = pd.concat([df_existing, df_new], ignore_index=True)
 
-#Etape 4 : Création du DataFrame à partir de enriched_cve_data
-df = pd.DataFrame(enriched_cve_data)
-
-#sauvegarde en CSV 
-df.to_csv("DataFrame-Local.csv", index=False, encoding="utf-8")
-
-print("Fichier DataFrame-Local.csv généré avec succès !")
+# sauvegarde finale
+df_final.to_csv("DataFrame.csv", index=False, encoding="utf-8")
+print(f"DataFrame.csv mis à jour ! Total lignes : {df_final.shape[0]}")
