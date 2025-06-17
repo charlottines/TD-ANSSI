@@ -125,16 +125,17 @@ for bulletin in dict_bulletins:
             
             cvss_score = None
             base_severity = "Non disponible"
-            try:
-                metrics = data_mitre["containers"]["cna"]["metrics"][0]
-                if "cvssV3_1" in metrics:
-                    cvss_score = metrics["cvssV3_1"]["baseScore"]
-                    base_severity = metrics["cvssV3_1"]["baseSeverity"]
-                elif "cvssV3_0" in metrics:
-                    cvss_score = metrics["cvssV3_0"]["baseScore"]
-                    base_severity = metrics["cvssV3_0"]["baseSeverity"]
-            except:
-                pass
+
+            metrics_list = data_mitre.get("containers", {}).get("cna", {}).get("metrics", [])
+
+            if metrics_list:
+                metrics = metrics_list[0]
+                for version in ["cvssV3_1", "cvssV3_0", "cvssV2"]:
+                    if version in metrics:
+                        cvss_score = metrics[version].get("baseScore")
+                        base_severity = metrics[version].get("baseSeverity", "Non disponible")
+                        break
+
             
             cwe = "Non disponible"
             cwe_desc = "Non disponible"
