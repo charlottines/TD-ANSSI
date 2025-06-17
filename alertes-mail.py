@@ -52,7 +52,9 @@ for _, row in alertes.iterrows():
     print("============================================\n")
     
     #envoi alertes par email
-    send_email("votre_email@gmail.com", f"Alerte critique : {cve}", message)
+    #send_email("votre_email@gmail.com", f"Alerte critique : {cve}", message)
+
+    #ligne 55 à décommenter si on veut envoyer par email (aussi mettre la bonne adresse email et mdp lignes 20 et 21)
     
 
 
