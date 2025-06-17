@@ -1,26 +1,12 @@
 # Projet Data - Extraction et Enrichissement des Bulletins CERT-FR
 
-## Objectif
+## Fichier Fournis : 
 
-Constituer un DataFrame enrichi des bulletins de sécurité publiés par le CERT-FR (avis + alertes), contenant :
-- le titre du bulletin
-- la description
-- la date de publication
-- le lien vers le bulletin détaillé
-- la liste des CVE associées
-- pour chaque CVE : enrichissement via MITRE et FIRST
+### 1️) DataFrame.csv
+DataFrame initial généré à partir des données fournis par le professeur (dossier "data_pour_TD_final")
 
-## Pipeline de traitement
-
-### 1️⃣ Extraction initiale
-Script : `Projet-Data-Local.py`
-
-- On lit les bulletins fournis en local (dossier "data_pour_TD_final") :
-    - dossiers Avis/, alertes/, mitre/, first/
-- On génère un DataFrame de base : `DataFrame.csv`
-
-### 2️⃣ Mise à jour automatique
-Script : `Projet-Data-Update.py`
+### 2️) Projet-Data-Update.py
+Fichier qui permet la mise à jour du DataFrame.csv à partir des informations du site de l'ANSSI
 
 - On lit les flux RSS officiels :
     - https://www.cert.ssi.gouv.fr/avis/feed
@@ -29,11 +15,37 @@ Script : `Projet-Data-Update.py`
 - On les enrichit automatiquement :
     - Récupération des CVE
     - Détails MITRE + score EPSS FIRST
-- On complète le DataFrame final (on le met à jour avec les nouvelles données)
+- On complète le DataFrame final (on met à jour DataFrame.csv avec les nouvelles données)
 
-### 3️⃣ Avantage
+### 3️) alertes-mail.py
 
-- Le DataFrame est **toujours à jour** en relançant simplement `Projet-Data-Update.py` régulièrement.
+Script de surveillance automatique des vulnérabilités critiques qui envoie une alerte (dans la console ou par mail) si le CVSS_score ≥ 8 ou EPSS_score ≥ 0.8
+
+Par défaut, les alertes sont affichées dans la console. Pour activer l’envoi par email, décommente la ligne send_email(...) et configure ton adresse dans le script
+
+
+## Fonctionnement
+
+### Commande à exécuter une première fois dans le Terminal (si pas déjà installé) : 
+```bash
+pip install feedparser
+```
+
+### Etape 1 : 
+S'assurer de bien avoir le fichier "Projet-Data-Update.py" dans le même répertoire que notre DataFrame.csv
+
+### Etape 2 : 
+Exécuter le fichier "Projet-Data.py" qui va récupérer les nouveaux bulletins sur le site de l'ANSSI et mettre à jour le DataFrame.csv en ajoutant ces nouveaux bulletins
+
+### Etape 3 : 
+Exécuter le fichier "alertes-mail.py" : des alertes vont apparaître dans la console pour indiquer les vulnérabilités critiques. Il y a également la possibilité d'envoyer ces alertes par email en décommentant la ligne 55 (send_email(...)), en configurant l'adresse email et le mdp de l'envoyeur (lignes 20 et 21) et en indiquant l'adresse email du receveur lors de l'appel de la fonction send_email(...) ligne 55
+
+### Etape 4 : 
+Regarder la page html qui correspond à notre fichier .ipynb (notre Notebook Jupyter) qui contient toute l’analyse des données de notre DataFrame.csv
+
+Chaque graphique est expliqué et interprété, afin de tirer des enseignements concrets pour la cybersécurité 
+
+
 
 ## Structure du DataFrame final
 
@@ -56,24 +68,8 @@ Script : `Projet-Data-Update.py`
 | Versions_affectees   | Versions affectées |
 
 
-## Exécution
-
-### Commande à exécuter la première fois dans le Terminal : 
-```bash
-pip install feedparser
-```
-
-### 1️⃣ Première exécution (extraction initiale) :
-```bash
-python Projet-Data-Local.py
-```
-
-### 2️⃣ Mises à jour régulières (nouveaux bulletins) :
-```bash
-python Projet-Data-Update.py
-```
 
 ## Contributeurs 
 
-Inès, Rhita, Léo, Anaëlle
+XXX, XXX, XXX, XXX
 
