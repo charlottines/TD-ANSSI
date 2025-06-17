@@ -1,7 +1,8 @@
-#étape 6 : génération d'alertes et d'email
-"""Nous avons mis en place un système d’alerte pour identifier automatiquement les vulnérabilités critiques, en nous basant sur les critères suivants :
-Score CVSS ≥ 8 ou EPSS ≥ 0.8
-Lorsqu’une vulnérabilité remplit ces conditions, un email d’alerte est envoyé et un print dans la console est fait"""
+
+# étape 6 : génération d'alertes et d'email
+
+# Nous avons mis en place un système d’alerte pour identifier automatiquement les vulnérabilités critiques, en nous basant sur les critères suivants : Score CVSS ≥ 8 ou EPSS ≥ 0.8
+# Lorsqu’une vulnérabilité remplit ces conditions, un email d’alerte est envoyé et un print dans la console est fait"""
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,7 +10,7 @@ import seaborn as sns
 import smtplib
 from email.mime.text import MIMEText
 
-# Chargement du DataFrame
+#chargement du DataFrame
 csv_path = "DataFrame.csv"
 df = pd.read_csv(csv_path, encoding="utf-8")
 
@@ -44,7 +45,7 @@ for _, row in alertes.iterrows():
     description = row["Description"]
     message = f"Une vulnérabilité critique a été détectetée sur {produit}.\nCVE : {cve}\nLien : {lien}\n\n{description}"
 
-    
+
     #affichage des alertes dans la console
     print(f"\n===== Alerte envoyée pour {cve} =====")
     print(message)
