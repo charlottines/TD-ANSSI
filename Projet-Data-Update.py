@@ -5,10 +5,11 @@ import time
 import pandas as pd
 import os
 
-#lecture du DataFrame existant avec les données du prof
+#lecture du DataFrame existant avec les données du prof (le fichier nommé "DataFrame.csv doit être dans le même dossier que ce fichier .py")
 
 df_existing = pd.read_csv("DataFrame.csv", encoding="utf-8")
 print(f"DataFrame existant : {df_existing.shape[0]} lignes")
+
 
 #Etape 1 : Lecture flux RSS 
 
@@ -22,30 +23,32 @@ flux_urls = [
 list_links = []
 dict_bulletins = [] #pour stocker les infos pour le CSV
 
-#On parcourt les 2 flux
+#on parcourt les 2 flux
 for url in flux_urls:
     print(f"--- Flux : {url} ---")
     rss_feed = feedparser.parse(url)
     
-    #Parcours de chaque bulletin
+    #on parcourt chaque bulletin
     for entry in rss_feed.entries:
         link = entry.link
         list_links.append(link)
         
-        #Vérifie si ce bulletin est déjà dans le CSV
+        #vérifie si ce bulletin est déjà dans le CSV
         if link in df_existing["Lien_bulletin"].values:
             print(f"Déjà dans le DataFrame : {link}")
-            continue  #On ne le traite pas
+            continue  #si c'est le cas, on ne le traite pas
         
-        print("-" * 80)
+        #si c'est un nouveau bulletin, on affiche ses infos
+        print("-" * 80) 
         print(f"** Nouveau bulletin détecté ** :")
         print("Titre :", entry.title)
         print("Description:", entry.description)
         print("Date :", entry.published)
         print("Lien :", entry.link)
-        print("-" * 80) #ligne de séparation pour la lisibilité
+        print("-" * 80) 
         
         type_bulletin = "Alerte" if "/alerte/" in link else "Avis"
+        
         
         dict_bulletins.append({
             "Titre_ANSSI": entry.title,
@@ -59,6 +62,8 @@ for url in flux_urls:
 #Etape 2 : Extraction des CVE 
 
 print("\nExtraction CVE des nouveaux bulletins : \n")
+
+#récupérer les liens JSON des nouveaux bulletins
 for bulletin in dict_bulletins:
     link = bulletin["Lien_bulletin"]
     json_url = link + "json/"
@@ -201,6 +206,8 @@ for bulletin in dict_bulletins:
                 row["EPSS_score"] = epss_score
         
         time.sleep(1)
+
+        
 
 #Etape 4 : Fusion des dataframes et sauvegarde
 
