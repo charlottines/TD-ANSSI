@@ -207,7 +207,7 @@ for bulletin in dict_bulletins:
 df_new = pd.DataFrame(enriched_cve_data)
 print(f"\nNouvelles lignes à ajouter : {df_new.shape[0]}")
 
-# concaténation
+#concaténation
 df_final = pd.concat([df_existing, df_new], ignore_index=True)
 
 # sauvegarde finale
