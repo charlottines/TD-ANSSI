@@ -10,7 +10,7 @@ import os
 df_existing = pd.read_csv("DataFrame.csv", encoding="utf-8")
 print(f"DataFrame existant : {df_existing.shape[0]} lignes")
 
-#Etape 1 : Lecture flux RSS
+#Etape 1 : Lecture flux RSS 
 
 #liste des 2 flux à lire (avis et alertes)
 flux_urls = [

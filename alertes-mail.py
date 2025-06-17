@@ -48,7 +48,9 @@ for _, row in alertes.iterrows():
     description = row["Description"]
     message = f"Une vulnérabilité critique a été détectetée sur {produit}.\nCVE : {cve}\nLien : {lien}\n\n{description}"
     #affichage des alertes dans la console
-    print(f"[SIMULATION] Alerte envoyée pour {cve}")
+    print(f"\n===== Alerte envoyée pour {cve} =====")
+    print(message)
+    print("============================================\n")
     
     #envoi alertes par email
     send_email("anaelle.pollart@gmail.com", f"Alerte critique : {cve}", message)
