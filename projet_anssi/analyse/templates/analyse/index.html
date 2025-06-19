@@ -1,0 +1,21 @@
+{% extends "analyse/base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h1 class="mb-3 fw-bold"> Dashboard des vulnérabilités ANSSI</h1>
+  <p class="text-muted mb-4">
+    Cette plateforme regroupe et analyse automatiquement les bulletins publiés par l’ANSSI, enrichis avec des données CVE, CVSS et EPSS.
+    Utilisez les onglets ci-dessus pour explorer les vulnérabilités, visualiser les tendances, ou consulter les résultats machine learning.
+  </p>
+
+  <div class="alert alert-info" role="alert">
+    Ce tableau affiche un aperçu des <strong>100 vulnérabilités les plus récentes</strong> publiées par l’ANSSI.
+  </div>
+
+  <div class="table-responsive">
+    {{ table|safe }}
+  </div>
+
+</div>
+{% endblock %}
