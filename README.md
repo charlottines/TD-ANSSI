@@ -33,13 +33,43 @@ Pour utiliser le 2eme mode :
 - Utilisez ce mot de passe à l’exécution du script
 
 ### 4) django.py
-Ce script permet d'ouvrir
+Ce script permet d’ouvrir automatiquement l’application Django et de lancer le serveur web en une seule commande, sans avoir à naviguer manuellement dans les dossiers. Il simplifie le démarrage du site pour visualiser les pages web et déclencher les alertes.
+
+structure : 
+projet_anssi/
+├── analyse/                      ← App Django principale
+│   ├── templates/analyse/       ← Fichiers HTML (frontend : visualisation, alertes, ML, etc.)
+│   ├── static/analyse/          ← Fichiers statiques (CSS, images, scripts)
+│   ├── views.py                 ← Logique backend (affichage, alertes, routes)
+│   ├── urls.py                  ← Routes propres à l'app
+├── projet_anssi/                ← Configuration principale du projet Django
+│   ├── settings.py              ← Paramètres globaux (apps, chemins, sécurité)
+│   ├── urls.py                  ← Routes globales du site 
+├── manage.py                    ← Lancement classique du projet Django
+├── launch.py                    ← Script personnalisé pour lancer rapidement l'app
+├── db.sqlite3                   ← Base de données locale utilisée par Django
+
+les pages :
+
+- Accueil (/)
+Page d’entrée du site, elle présente brièvement le projet et donne accès aux différentes sections.
+
+- Visualisation (/visualisation)
+Permet de consulter les graphiques et analyses statistiques extraits du fichier data-analysis.ipynb. Les visualisations sont interactives et accompagnées d’interprétations.
+
+- Alertes (/alertes)
+Page dédiée à l’envoi des alertes critiques par email. Un formulaire permet de saisir les identifiants Gmail et l’adresse du destinataire. Les alertes sont générées à partir du fichier DataFrame.csv.
+
+- Machine Learning (/ml)
+Affiche les résultats de l’étape 7 : modèles de machine learning appliqués aux vulnérabilités, avec validation, performances et interprétation.
+
+
   
-### 4) data-analysis.html
+### 5) data-analysis.html
 
 Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'interprétation et la visualisation de nos données avec les analyses et interprétations  de ces dernières. Chaque graphique est expliqué et interprété, afin de tirer des enseignements concrets pour la cybersécurité 
 
-### 5) machine-learning-etape7.html
+### 6) machine-learning-etape7.html
 
 Fichier html correspondant à notre Notebbok pour l'étape 7 qui contient les différents modèles de Machine Learning ainsi que leurs explications, leurs analyses et leurs validations. 
 
