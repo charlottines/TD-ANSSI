@@ -133,6 +133,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def stop_alerts(request):
-    global STOP_SENDING
-    STOP_SENDING = True
-    return HttpResponse(" Envoi interrompu !")
+    stop_path = os.path.join(os.path.dirname(__file__), "..", "stop_alerts.flag")
+    with open(stop_path, "w") as f:
+        f.write("STOP")
+    return HttpResponse("✅ Envoi interrompu manuellement.")

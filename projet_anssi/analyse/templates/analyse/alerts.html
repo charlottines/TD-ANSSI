@@ -41,12 +41,9 @@
   </button>
 </div>
 
-<script>
-  function stopEnvoi() {
-    fetch("/alerts/stop/", { method: "POST" })
-      .then(() => alert(" L'envoi a été stoppé !"))
-      .catch(() => alert(" Échec de l'arrêt."));
-  }
-</script>
+<form method="POST" action="{% url 'stop_alerts' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-outline-secondary mt-3">⛔ Stopper l’envoi</button>
+</form>
 
 {% endblock %}

@@ -12,17 +12,14 @@ from email.mime.text import MIMEText
 import os
 
 def envoyer_alertes(mode="console", from_email=None, password=None, to_email=None, subject="Alerte critique"):
-    
-    #chargement du DataFrame
+    # Chargement du DataFrame
     csv_path = os.path.join(os.path.dirname(__file__), "DataFrame.csv")
     df = pd.read_csv(csv_path, encoding="utf-8")
 
-    #préparation des alertes
+    # Préparation des alertes
     print("\nDétection des vulnérabilités critiques (CVSS ≥ 8 et EPSS ≥ 0.7)")
     df["EPSS_score"] = pd.to_numeric(df["EPSS_score"], errors="coerce")
     df["CVSS_score"] = pd.to_numeric(df["CVSS_score"], errors="coerce")
-
-    #condition a respecter
     alertes = df[(df["CVSS_score"] >= 8) & (df["EPSS_score"] >= 0.7)]
 
     if alertes.empty:
@@ -30,9 +27,13 @@ def envoyer_alertes(mode="console", from_email=None, password=None, to_email=Non
         return False, ["Aucune vulnérabilité critique détectée."]
 
     messages = []
+    stop_path = os.path.join(os.path.dirname(__file__), "stop_alerts.flag")
 
-    #parcourt at affichage des alertes critiques
     for _, row in alertes.iterrows():
+        if os.path.exists(stop_path):
+            print("⛔ Envoi interrompu manuellement (fichier stop_alerts.flag détecté).")
+            break
+
         produit = str(row.get("Produit", "N/A"))
         cve = str(row.get("CVE_ID", "N/A"))
         lien = str(row.get("Lien_bulletin", "N/A"))
@@ -50,7 +51,6 @@ Lien Bulletin : {lien}
 Description   : {description.strip()[:300]}{'...' if len(description) > 300 else ''}
 """
 
-        #affichage en fonction du choix de l'utilisateur
         if mode == "console":
             print("\n" + "="*70)
             print(f"ALERTE : {cve}")
@@ -62,7 +62,7 @@ Description   : {description.strip()[:300]}{'...' if len(description) > 300 else
             if not (from_email and password and to_email):
                 print("Paramètres d'envoi d'email manquants.")
                 return False, ["Erreur : paramètres email manquants."]
-            
+
             msg = MIMEText(body)
             msg['From'] = from_email
             msg['To'] = to_email
@@ -74,10 +74,10 @@ Description   : {description.strip()[:300]}{'...' if len(description) > 300 else
                 server.login(from_email, password)
                 server.sendmail(from_email, to_email, msg.as_string())
                 server.quit()
-                print(f"Email envoyé pour {cve}")
+                print(f"✅ Email envoyé pour {cve}")
             except Exception as e:
-                print(f"Échec d'envoi pour {cve} : {e}")
-        
+                print(f"❌ Échec d'envoi pour {cve} : {e}")
+
         messages.append(body)
 
     return True, messages
