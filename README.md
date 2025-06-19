@@ -19,11 +19,19 @@ Fichier qui permet la mise à jour du DataFrame.csv à partir des informations d
 
 ### 3️) alertes-mail.py
 
-Script de surveillance automatique des vulnérabilités critiques qui envoie une alerte (dans la console ou par mail) si le CVSS_score ≥ 8 ET EPSS_score ≥ 0.7
-Lorsqu’une vulnérabilité remplit ces deux conditions, un email d’alerte est envoyé et un print dans la console est fait. Cela permet de cibler uniquement les failles à la fois critiques et avec une forte probabilité d’attaque effective, donc vraiment prioritaires. 
+Ce script Python permet de détecter automatiquement les vulnérabilités critiques à partir d’un fichier CSV (DataFrame.csv) et de générer des alertes personnalisées, soit affichées dans la console, soit envoyées directement par email.
+Le script identifie les vulnérabilités hautement critiques, en se basant sur deux indicateurs clés : CVSS_score ≥ 8 : gravité technique élevée ET EPSS_score ≥ 0.7 : forte probabilité d’exploitation réelle.
+Cela permet de cibler uniquement les failles à la fois critiques et avec une forte probabilité d’attaque effective, donc vraiment prioritaires. 
 
-Par défaut, les alertes sont affichées dans la console. Pour activer l’envoi par email, décommente la ligne send_email(...) et configure ton adresse dans le script
+Une fois le script lancé, l'utilisateur choisit le mode de notification :
+- Affichage dans la console (1)
+- Envoie par email (2)
 
+Pour utiliser le 2eme mode :
+- Activez l’authentification à deux facteurs dans Gmail
+- Créez un mot de passe d'application
+- Utilisez ce mot de passe à l’exécution du script
+  
 ### 4) data-analysis.html
 
 Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'interprétation et la visualisation de nos données avec les analyses et interprétations  de ces dernières. Chaque graphique est expliqué et interprété, afin de tirer des enseignements concrets pour la cybersécurité 
