@@ -10,6 +10,7 @@ urlpatterns = [
     path("ml/", views.ml_exported, name="ml_exported"),
     path("alerts/", views.alerts_page, name="alerts_page"),
     path("alerts/send/", views.trigger_alerts, name="trigger_alerts"),
+    path("alerts/stop/", views.stop_alerts, name="stop_alerts"),
 ]
 
 # 4. Fichier views.py (analyse/views.py)

@@ -77,7 +77,9 @@ def ml_exported(request):
         return FileResponse(open(path, "rb"), content_type="text/html")
     except FileNotFoundError:
         return HttpResponse("<h2 style='color:red;'>Fichier Machine Learning introuvable.</h2>")
-    
+
+STOP_SENDING = False
+
 # views.py
 def alerts_page(request):
     return render(request, "analyse/alerts.html")
@@ -100,6 +102,7 @@ from alertes_mail import envoyer_alertes
 
 @csrf_exempt
 def trigger_alerts(request):
+    global STOP_SENDING
     if request.method == "POST":
         from_email = request.POST.get("from_email")
         password = request.POST.get("password")
@@ -110,11 +113,26 @@ def trigger_alerts(request):
             return HttpResponse("<div style='color:red;'> Erreur : tous les champs doivent être remplis.</div>")
 
         try:
-            success, messages = envoyer_alertes(mode="email", from_email=from_email, password=password, to_email=to_email, subject=subject)
+            STOP_SENDING = False  # reset à chaque envoi
+            success, messages = envoyer_alertes(
+                mode="email",
+                from_email=from_email,
+                password=password,
+                to_email=to_email,
+                subject=subject
+            )
             if not success:
                 return HttpResponse("<div style='color:blue;'> Aucune vulnérabilité critique détectée.</div>")
             return HttpResponse("<div style='color:green;font-weight:bold;'> Alertes envoyées avec succès !</div>")
         except Exception as e:
             return HttpResponse(f"<div style='color:red;'> Erreur : {str(e)}</div>")
 
-    return HttpResponse("<div style='color:orange;'> Méthode non autorisée</div>")
+    return HttpResponse("<div style='color:orange;'>⚠️ Méthode non autorisée</div>")
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def stop_alerts(request):
+    global STOP_SENDING
+    STOP_SENDING = True
+    return HttpResponse(" Envoi interrompu !")
