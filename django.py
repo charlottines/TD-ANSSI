@@ -8,7 +8,7 @@ project_dir = os.path.join(os.path.dirname(__file__), "projet_anssi")
 
 # Commande pour lancer le serveur Django
 def run_django():
-    subprocess.Popen(["python3", "manage.py", "runserver"], cwd=project_dir)
+    subprocess.Popen(["python", "manage.py", "runserver"], cwd=project_dir)
 
 # Lancer le serveur
 run_django()
