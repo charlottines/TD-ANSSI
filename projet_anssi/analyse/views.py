@@ -84,32 +84,40 @@ def alerts_page(request):
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.conf import settings
 import pandas as pd
 import smtplib
 from email.mime.text import MIMEText
+import os
 
 @csrf_exempt
 def trigger_alerts(request):
     if request.method == "POST":
         try:
-            df = pd.read_csv("DataFrame.csv", encoding="utf-8")
+            from_email = request.POST.get("from_email")
+            password = request.POST.get("password")
+            subject = request.POST.get("subject", "Alerte critique")
+            to_email = request.POST.get("to_email")
+
+            csv_path = os.path.join(settings.BASE_DIR, "..", "DataFrame.csv")
+            df = pd.read_csv(csv_path, encoding="utf-8")
             df["EPSS_score"] = pd.to_numeric(df["EPSS_score"], errors="coerce")
             df["CVSS_score"] = pd.to_numeric(df["CVSS_score"], errors="coerce")
 
             alertes = df[(df["CVSS_score"] >= 8) & (df["EPSS_score"] >= 0.7)]
 
-            from_email = "votre_email@gmail.com"
-            password = "mot_de_passe_application"
+            if alertes.empty:
+                return HttpResponse("<div style='color:blue;'>ℹ️ Aucune vulnérabilité critique détectée.</div>")
 
             for _, row in alertes.iterrows():
-                produit = row["Produit"]
-                cve = row["CVE_ID"]
-                lien = row["Lien_bulletin"]
-                description = row["Description"]
-                cvss = row["CVSS_score"]
-                epss = row["EPSS_score"]
+                produit = str(row.get("Produit", "N/A") or "N/A")
+                cve = str(row.get("CVE_ID", "N/A") or "N/A")
+                lien = str(row.get("Lien_bulletin", "N/A") or "N/A")
+                description = str(row.get("Description", "N/A") or "N/A")
+                cvss = str(row.get("CVSS_score", "N/A") or "N/A")
+                epss = str(row.get("EPSS_score", "N/A") or "N/A")
 
-                body = f"""Alerte critique détectée :
+                body = f"""🚨 Vulnérabilité critique détectée :
 
 Produit       : {produit}
 CVE ID        : {cve}
@@ -121,16 +129,18 @@ Description   : {description.strip()[:300]}{'...' if len(description) > 300 else
 
                 msg = MIMEText(body)
                 msg['From'] = from_email
-                msg['To'] = "destinataire@email.com"
-                msg['Subject'] = f"Alerte critique : {cve}"
+                msg['To'] = to_email
+                msg['Subject'] = f"{subject} : {cve}"
 
                 server = smtplib.SMTP('smtp.gmail.com', 587)
                 server.starttls()
                 server.login(from_email, password)
-                server.sendmail(from_email, "destinataire@email.com", msg.as_string())
+                server.sendmail(from_email, to_email, msg.as_string())
                 server.quit()
 
-            return HttpResponse("✅ Alertes envoyées avec succès !")
+            return HttpResponse("<div style='color:green;font-weight:bold;'>✅ Alertes envoyées avec succès !</div>")
+
         except Exception as e:
-            return HttpResponse(f"<h3 style='color:red;'>Erreur : {str(e)}</h3>")
-    return HttpResponse("Méthode non autorisée")
+            return HttpResponse(f"<div style='color:red;'>❌ Erreur : {str(e)}</div>")
+
+    return HttpResponse("<div style='color:orange;'>⚠️ Méthode non autorisée</div>")

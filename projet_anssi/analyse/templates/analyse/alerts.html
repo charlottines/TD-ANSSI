@@ -1,40 +1,53 @@
 {% extends "analyse/base.html" %}
+
 {% block content %}
-<div class="container py-5">
-  <h1 class="text-center mb-4"><span style="font-size: 1.5em;">🔔</span> Vulnérabilités Critiques Détectées</h1>
+<div class="container mt-5 text-center">
 
-  <!-- BOUTON DÉCLENCHEMENT -->
-  <div class="text-center mb-4">
-    <form action="{% url 'trigger_alerts' %}" method="post">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger btn-lg shadow">
-        🔴 Déclencher les alertes critiques
-      </button>
-    </form>
-  </div>
+  <h1 class="display-5 mb-4">
+    <span style="font-size: 2.5rem;">🔔</span> Vulnérabilités Critiques Détectées
+  </h1>
 
-  <!-- AUCUNE ALERTE -->
-  {% if alerts|length == 0 %}
-    <div class="alert alert-info text-center">
-      ✅ Aucune vulnérabilité critique détectée.
-    </div>
+  <form method="POST" action="{% url 'trigger_alerts' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-lg shadow px-4 py-2 mb-5">
+       Déclencher les alertes critiques
+    </button>
+  </form>
 
-  <!-- LISTE DES ALERTES -->
-  {% else %}
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-      {% for alert in alerts %}
-        <div class="col">
-          <div class="card border-danger shadow h-100">
-            <div class="card-body">
-              <h5 class="card-title text-danger fw-bold">{{ alert.produit }} — {{ alert.cve }}</h5>
-              <p><strong>CVSS :</strong> {{ alert.cvss }} | <strong>EPSS :</strong> {{ alert.epss }}</p>
-              <p>{{ alert.description }}</p>
-              <a href="{{ alert.lien }}" target="_blank" class="btn btn-outline-primary btn-sm">Voir le bulletin</a>
-            </div>
-          </div>
+  {% if messages %}
+    <div class="alert alert-warning text-start" role="alert">
+      <h5 class="mb-3"> Résumé des alertes détectées :</h5>
+      {% for msg in messages %}
+        <div class="alert alert-light border-start border-danger border-4 p-3 mb-3" style="font-family: monospace;">
+          <pre class="m-0">{{ msg }}</pre>
         </div>
       {% endfor %}
     </div>
+  {% else %}
+    <div class="alert alert-info d-inline-flex align-items-center justify-content-center px-4 py-3 shadow-sm border rounded">
+       <span class="ms-2">Aucune vulnérabilité critique détectée.</span>
+    </div>
   {% endif %}
+
+</div>
+
+<div class="alert alert-info mt-5 shadow-sm border border-primary-subtle" style="max-width: 850px; margin: auto; background-color: #e8f4fd;">
+  <h5 class="fw-bold mb-3">
+     Astuce : Problème d’envoi d’email ?
+  </h5>
+  <p class="mb-2">
+    Vérifiez que l’adresse et le mot de passe de l’expéditeur sont correctement renseignés dans 
+    <code><strong>views.py</strong></code> (vers la ligne <strong>102</strong>) :
+  </p>
+  <ul class="mb-3">
+    <li><code>from_email = "votre_email@gmail.com"</code></li>
+    <li><code>password = "mot_de_passe_application"</code></li>
+  </ul>
+  <p>
+    Pour Gmail, <strong>générez un mot de passe d’application</strong> depuis 
+    <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-decoration-underline fw-semibold">
+      cette page
+    </a>.
+  </p>
 </div>
 {% endblock %}
