@@ -26,7 +26,7 @@ Par défaut, les alertes sont affichées dans la console. Pour activer l’envoi
 
 ### 4) data-analysis.html
 
-Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'interprétation et la visualisation de nos données avec les analyses et interprétations  de ces dernières. 
+Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'interprétation et la visualisation de nos données avec les analyses et interprétations  de ces dernières. Chaque graphique est expliqué et interprété, afin de tirer des enseignements concrets pour la cybersécurité 
 
 ### 5) machine-learning-etape7.html
 
@@ -49,9 +49,8 @@ Exécuter le fichier "Projet-Data.py" qui va récupérer les nouveaux bulletins 
 Exécuter le fichier "alertes-mail.py" : des alertes vont apparaître dans la console pour indiquer les vulnérabilités critiques. Il y a également la possibilité d'envoyer ces alertes par email en décommentant la ligne 66 (send_email(...)), en configurant l'adresse email et le mdp de l'envoyeur (lignes 22 et 23) et en indiquant l'adresse email du receveur lors de l'appel de la fonction send_email(...) ligne 66
 
 ### Etape 4 : 
-Regarder la page html qui correspond à notre fichier .ipynb (notre Notebook Jupyter) qui contient toute l’analyse des données de notre DataFrame.csv
+Regarder les pages html qui correspondent à nos fichiers .ipynb (nos Notebook Jupyter) des étapes 5 et 7, qui contiennent toute l’analyse des données de notre DataFrame.csv ainsi que des modèles de Machine Learning.
 
-Chaque graphique est expliqué et interprété, afin de tirer des enseignements concrets pour la cybersécurité 
 
 
 
