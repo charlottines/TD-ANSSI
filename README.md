@@ -31,6 +31,9 @@ Pour utiliser le 2eme mode :
 - Activez l’authentification à deux facteurs dans Gmail
 - Créez un mot de passe d'application
 - Utilisez ce mot de passe à l’exécution du script
+
+### 4) django.py
+Ce script permet d'ouvrir
   
 ### 4) data-analysis.html
 
@@ -40,7 +43,7 @@ Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'inte
 
 Fichier html correspondant à notre Notebbok pour l'étape 7 qui contient les différents modèles de Machine Learning ainsi que leurs explications, leurs analyses et leurs validations. 
 
-## Fonctionnement
+## Pré-requis : 
 
 ### Commande à exécuter une première fois dans le Terminal (si pas déjà installé) : 
 ```bash
@@ -50,20 +53,6 @@ pip install feedparser
 ```bash
 pip install django
 ```
-
-### Etape 1 : 
-S'assurer de bien avoir le fichier "Projet-Data-Update.py" dans le même répertoire que notre DataFrame.csv
-
-### Etape 2 : 
-Exécuter le fichier "Projet-Data.py" qui va récupérer les nouveaux bulletins sur le site de l'ANSSI et mettre à jour le DataFrame.csv en ajoutant ces nouveaux bulletins
-
-### Etape 3 : 
-Exécuter le fichier "alertes-mail.py" : des alertes vont apparaître dans la console pour indiquer les vulnérabilités critiques. Il y a également la possibilité d'envoyer ces alertes par email en décommentant la ligne 66 (send_email(...)), en configurant l'adresse email et le mdp de l'envoyeur (lignes 22 et 23) et en indiquant l'adresse email du receveur lors de l'appel de la fonction send_email(...) ligne 66
-
-### Etape 4 : 
-Regarder les pages html qui correspondent à nos fichiers .ipynb (nos Notebook Jupyter) des étapes 5 et 7, qui contiennent toute l’analyse des données de notre DataFrame.csv ainsi que des modèles de Machine Learning.
-
-
 
 
 ## Structure du DataFrame final
