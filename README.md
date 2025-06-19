@@ -24,6 +24,13 @@ Lorsqu’une vulnérabilité remplit ces deux conditions, un email d’alerte es
 
 Par défaut, les alertes sont affichées dans la console. Pour activer l’envoi par email, décommente la ligne send_email(...) et configure ton adresse dans le script
 
+### 4) data-analysis.html
+
+Fichier html correspondant à notre Notebbok pour l'étape 5 qui contient l'interprétation et la visualisation de nos données avec les analyses et interprétations  de ces dernières. 
+
+### 5) machine-learning-etape7.html
+
+Fichier html correspondant à notre Notebbok pour l'étape 7 qui contient les différents modèles de Machine Learning ainsi que leurs explications, leurs analyses et leurs validations. 
 
 ## Fonctionnement
 
