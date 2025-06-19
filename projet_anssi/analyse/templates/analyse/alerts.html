@@ -1,0 +1,40 @@
+{% extends "analyse/base.html" %}
+{% block content %}
+<div class="container py-5">
+  <h1 class="text-center mb-4"><span style="font-size: 1.5em;">🔔</span> Vulnérabilités Critiques Détectées</h1>
+
+  <!-- BOUTON DÉCLENCHEMENT -->
+  <div class="text-center mb-4">
+    <form action="{% url 'trigger_alerts' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-lg shadow">
+        🔴 Déclencher les alertes critiques
+      </button>
+    </form>
+  </div>
+
+  <!-- AUCUNE ALERTE -->
+  {% if alerts|length == 0 %}
+    <div class="alert alert-info text-center">
+      ✅ Aucune vulnérabilité critique détectée.
+    </div>
+
+  <!-- LISTE DES ALERTES -->
+  {% else %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for alert in alerts %}
+        <div class="col">
+          <div class="card border-danger shadow h-100">
+            <div class="card-body">
+              <h5 class="card-title text-danger fw-bold">{{ alert.produit }} — {{ alert.cve }}</h5>
+              <p><strong>CVSS :</strong> {{ alert.cvss }} | <strong>EPSS :</strong> {{ alert.epss }}</p>
+              <p>{{ alert.description }}</p>
+              <a href="{{ alert.lien }}" target="_blank" class="btn btn-outline-primary btn-sm">Voir le bulletin</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

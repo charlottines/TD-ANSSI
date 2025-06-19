@@ -8,6 +8,8 @@ urlpatterns = [
     path('graph/', views.graph, name='graph'),
     path("notebook-graphs/", views.notebook_graphs, name="notebook_graphs"),
     path("ml/", views.ml_exported, name="ml_exported"),
+    path("alerts/", views.alerts_page, name="alerts_page"),
+    path("alerts/send/", views.trigger_alerts, name="trigger_alerts"),
 ]
 
 # 4. Fichier views.py (analyse/views.py)

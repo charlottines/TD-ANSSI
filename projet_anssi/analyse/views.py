@@ -77,3 +77,60 @@ def ml_exported(request):
         return FileResponse(open(path, "rb"), content_type="text/html")
     except FileNotFoundError:
         return HttpResponse("<h2 style='color:red;'>Fichier Machine Learning introuvable.</h2>")
+    
+# views.py
+def alerts_page(request):
+    return render(request, "analyse/alerts.html")
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+import pandas as pd
+import smtplib
+from email.mime.text import MIMEText
+
+@csrf_exempt
+def trigger_alerts(request):
+    if request.method == "POST":
+        try:
+            df = pd.read_csv("DataFrame.csv", encoding="utf-8")
+            df["EPSS_score"] = pd.to_numeric(df["EPSS_score"], errors="coerce")
+            df["CVSS_score"] = pd.to_numeric(df["CVSS_score"], errors="coerce")
+
+            alertes = df[(df["CVSS_score"] >= 8) & (df["EPSS_score"] >= 0.7)]
+
+            from_email = "votre_email@gmail.com"
+            password = "mot_de_passe_application"
+
+            for _, row in alertes.iterrows():
+                produit = row["Produit"]
+                cve = row["CVE_ID"]
+                lien = row["Lien_bulletin"]
+                description = row["Description"]
+                cvss = row["CVSS_score"]
+                epss = row["EPSS_score"]
+
+                body = f"""Alerte critique détectée :
+
+Produit       : {produit}
+CVE ID        : {cve}
+Score CVSS    : {cvss}
+Score EPSS    : {epss}
+Lien Bulletin : {lien}
+Description   : {description.strip()[:300]}{'...' if len(description) > 300 else ''}
+                """
+
+                msg = MIMEText(body)
+                msg['From'] = from_email
+                msg['To'] = "destinataire@email.com"
+                msg['Subject'] = f"Alerte critique : {cve}"
+
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(from_email, password)
+                server.sendmail(from_email, "destinataire@email.com", msg.as_string())
+                server.quit()
+
+            return HttpResponse("✅ Alertes envoyées avec succès !")
+        except Exception as e:
+            return HttpResponse(f"<h3 style='color:red;'>Erreur : {str(e)}</h3>")
+    return HttpResponse("Méthode non autorisée")
