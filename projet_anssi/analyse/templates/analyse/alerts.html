@@ -35,15 +35,13 @@
   </form>
 </div>
 
-<div class="text-center mt-3">
-  <button type="button" class="btn btn-outline-secondary" onclick="stopEnvoi()">
-     Arrêter l'envoi
-  </button>
-</div>
-
 <form method="POST" action="{% url 'stop_alerts' %}">
   {% csrf_token %}
-  <button type="submit" class="btn btn-outline-secondary mt-3">⛔ Stopper l’envoi</button>
+  <div class="text-center">
+    <button type="submit" class="btn btn-outline-secondary mt-3">
+       Stopper l’envoi
+    </button>
+  </div>
 </form>
 
 {% endblock %}
