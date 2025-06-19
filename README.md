@@ -33,9 +33,22 @@ Pour utiliser le 2eme mode :
 - Utilisez ce mot de passe à l’exécution du script
 
 ### 4) django.py
-Ce script permet d’ouvrir automatiquement l’application Django et de lancer le serveur web en une seule commande, sans avoir à naviguer manuellement dans les dossiers. Il simplifie le démarrage du site pour visualiser les pages web et déclencher les alertes.
+Exécuter ce script permet d’ouvrir automatiquement l’application Django et de lancer le serveur web en une seule commande, sans avoir à naviguer manuellement dans les dossiers. 
+Il simplifie le démarrage du site pour visualiser les pages web et déclencher les alertes.
 
-structure : 
+### Description des pages du site :
+
+- Accueil : Page d’entrée du site, elle présente brièvement le projet et affiche un aperçu des 100 vulnérabilités les plus récentes publiées par l’ANSSI.
+
+- Visualisation : Affiche les résultats de l'étape 5 : Permet de consulter la visualisation et l'interprétation des graphiques issus de notre Notebook (fichier data-analysis.ipynb). Les visualisations sont interactives et accompagnées d'analyses et d’interprétations.
+
+- Alertes : Page dédiée à l’envoi des alertes critiques par email. Un formulaire permet de saisir les identifiants Gmail et l’adresse du destinataire. Les alertes sont générées à partir du fichier DataFrame.csv.
+
+- Machine Learning : Affiche les résultats de l’étape 7 : modèles de machine learning appliqués aux vulnérabilités, avec validation, performances et interprétation.
+
+  
+### structure : 
+```
 projet_anssi/
 ├── analyse/                      ← App Django principale
 │   ├── templates/analyse/       ← Fichiers HTML (frontend : visualisation, alertes, ML, etc.)
@@ -48,20 +61,8 @@ projet_anssi/
 ├── manage.py                    ← Lancement classique du projet Django
 ├── launch.py                    ← Script personnalisé pour lancer rapidement l'app
 ├── db.sqlite3                   ← Base de données locale utilisée par Django
+```
 
-les pages :
-
-- Accueil (/)
-Page d’entrée du site, elle présente brièvement le projet et donne accès aux différentes sections.
-
-- Visualisation (/visualisation)
-Permet de consulter les graphiques et analyses statistiques extraits du fichier data-analysis.ipynb. Les visualisations sont interactives et accompagnées d’interprétations.
-
-- Alertes (/alertes)
-Page dédiée à l’envoi des alertes critiques par email. Un formulaire permet de saisir les identifiants Gmail et l’adresse du destinataire. Les alertes sont générées à partir du fichier DataFrame.csv.
-
-- Machine Learning (/ml)
-Affiche les résultats de l’étape 7 : modèles de machine learning appliqués aux vulnérabilités, avec validation, performances et interprétation.
 
 
   
