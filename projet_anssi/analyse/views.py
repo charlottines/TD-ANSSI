@@ -110,11 +110,11 @@ def trigger_alerts(request):
             return HttpResponse("<div style='color:red;'> Erreur : tous les champs doivent être remplis.</div>")
 
         try:
-            success, messages = envoyer_alertes(from_email, password, to_email, subject)
+            success, messages = envoyer_alertes(mode="email", from_email=from_email, password=password, to_email=to_email, subject=subject)
             if not success:
                 return HttpResponse("<div style='color:blue;'> Aucune vulnérabilité critique détectée.</div>")
             return HttpResponse("<div style='color:green;font-weight:bold;'> Alertes envoyées avec succès !</div>")
         except Exception as e:
             return HttpResponse(f"<div style='color:red;'> Erreur : {str(e)}</div>")
 
-    return HttpResponse("<div style='color:orange;'>⚠️ Méthode non autorisée</div>")
+    return HttpResponse("<div style='color:orange;'> Méthode non autorisée</div>")
