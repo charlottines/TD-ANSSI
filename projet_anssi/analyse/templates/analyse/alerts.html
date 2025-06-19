@@ -1,53 +1,38 @@
 {% extends "analyse/base.html" %}
-
 {% block content %}
-<div class="container mt-5 text-center">
 
-  <h1 class="display-5 mb-4">
-    <span style="font-size: 2.5rem;">🔔</span> Vulnérabilités Critiques Détectées
-  </h1>
+<div class="container mt-5" style="max-width: 600px;">
+  <h2 class="text-center mb-4"> Déclencher une alerte critique par email</h2>
 
   <form method="POST" action="{% url 'trigger_alerts' %}">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger btn-lg shadow px-4 py-2 mb-5">
-       Déclencher les alertes critiques
-    </button>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold"> Email expéditeur</label>
+      <input type="email" class="form-control" name="from_email" placeholder="ex: monmail@gmail.com" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold"> Mot de passe (mot de passe d'application Gmail)</label>
+      <input type="password" class="form-control" name="password" placeholder="mot de passe Gmail" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold"> Email destinataire</label>
+      <input type="email" class="form-control" name="to_email" placeholder="destinataire@example.com" required>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label fw-semibold"> Sujet du message</label>
+      <input type="text" class="form-control" name="subject" value="Alerte critique" required>
+    </div>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-danger btn-lg px-4 shadow">
+         Déclencher les alertes
+      </button>
+    </div>
   </form>
-
-  {% if messages %}
-    <div class="alert alert-warning text-start" role="alert">
-      <h5 class="mb-3"> Résumé des alertes détectées :</h5>
-      {% for msg in messages %}
-        <div class="alert alert-light border-start border-danger border-4 p-3 mb-3" style="font-family: monospace;">
-          <pre class="m-0">{{ msg }}</pre>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="alert alert-info d-inline-flex align-items-center justify-content-center px-4 py-3 shadow-sm border rounded">
-       <span class="ms-2">Aucune vulnérabilité critique détectée.</span>
-    </div>
-  {% endif %}
-
 </div>
 
-<div class="alert alert-info mt-5 shadow-sm border border-primary-subtle" style="max-width: 850px; margin: auto; background-color: #e8f4fd;">
-  <h5 class="fw-bold mb-3">
-     Astuce : Problème d’envoi d’email ?
-  </h5>
-  <p class="mb-2">
-    Vérifiez que l’adresse et le mot de passe de l’expéditeur sont correctement renseignés dans 
-    <code><strong>views.py</strong></code> (vers la ligne <strong>102</strong>) :
-  </p>
-  <ul class="mb-3">
-    <li><code>from_email = "votre_email@gmail.com"</code></li>
-    <li><code>password = "mot_de_passe_application"</code></li>
-  </ul>
-  <p>
-    Pour Gmail, <strong>générez un mot de passe d’application</strong> depuis 
-    <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-decoration-underline fw-semibold">
-      cette page
-    </a>.
-  </p>
-</div>
 {% endblock %}
