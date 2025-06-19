@@ -47,6 +47,10 @@ Fichier html correspondant à notre Notebbok pour l'étape 7 qui contient les di
 pip install feedparser
 ```
 
+```bash
+pip install django
+```
+
 ### Etape 1 : 
 S'assurer de bien avoir le fichier "Projet-Data-Update.py" dans le même répertoire que notre DataFrame.csv
 
