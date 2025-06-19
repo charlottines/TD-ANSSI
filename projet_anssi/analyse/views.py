@@ -127,13 +127,6 @@ def trigger_alerts(request):
         except Exception as e:
             return HttpResponse(f"<div style='color:red;'> Erreur : {str(e)}</div>")
 
-    return HttpResponse("<div style='color:orange;'>⚠️ Méthode non autorisée</div>")
+    return HttpResponse("<div style='color:orange;'> Méthode non autorisée</div>")
 
-from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def stop_alerts(request):
-    stop_path = os.path.join(os.path.dirname(__file__), "..", "stop_alerts.flag")
-    with open(stop_path, "w") as f:
-        f.write("STOP")
-    return HttpResponse("✅ Envoi interrompu manuellement.")

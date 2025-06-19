@@ -35,13 +35,4 @@
   </form>
 </div>
 
-<form method="POST" action="{% url 'stop_alerts' %}">
-  {% csrf_token %}
-  <div class="text-center">
-    <button type="submit" class="btn btn-outline-secondary mt-3">
-       Stopper l’envoi
-    </button>
-  </div>
-</form>
-
 {% endblock %}
